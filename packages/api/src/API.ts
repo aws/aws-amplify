@@ -350,7 +350,7 @@ export default class APIClass {
 	 * @param {object} additionalHeaders headers to merge in after any `graphql_headers` set in the config
 	 * @returns {Promise<GraphQLResult> | Observable<object>}
 	 */
-	graphql(
+	graphql<T>(
 		{ query: paramQuery, variables = {}, authMode }: GraphQLOptions,
 		additionalHeaders?: { [key: string]: string }
 	) {
@@ -369,9 +369,9 @@ export default class APIClass {
 		switch (operationType) {
 			case 'query':
 			case 'mutation':
-				return this._graphql({ query, variables, authMode }, additionalHeaders);
+				return this._graphql<T>({ query, variables, authMode }, additionalHeaders);
 			case 'subscription':
-				return this._graphqlSubscribe({
+				return this._graphqlSubscribe<T>({
 					query,
 					variables,
 					authMode,
@@ -381,10 +381,10 @@ export default class APIClass {
 		throw new Error(`invalid operation type: ${operationType}`);
 	}
 
-	private async _graphql(
+	private async _graphql<T>(
 		{ query, variables, authMode }: GraphQLOptions,
 		additionalHeaders = {}
-	): Promise<GraphQLResult> {
+	): Promise<GraphQLResult<T>> {
 		if (!this._api) {
 			await this.createInstance();
 		}
@@ -454,11 +454,11 @@ export default class APIClass {
 		return response;
 	}
 
-	private _graphqlSubscribe({
+	private _graphqlSubscribe<T>({
 		query,
 		variables,
 		authMode: defaultAuthenticationType,
-	}: GraphQLOptions): Observable<any> {
+	}: GraphQLOptions): Observable<T> & { [key: string]: any } {
 		const {
 			aws_appsync_region: region,
 			aws_appsync_graphqlEndpoint: appSyncGraphqlEndpoint,
