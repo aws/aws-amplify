@@ -17,17 +17,6 @@ import {
 	CognitoUserAttribute,
 } from 'amazon-cognito-identity-js';
 
-/**
- * Parameters for user sign up
- */
-export interface SignUpParams {
-	username: string;
-	password: string;
-	attributes?: object;
-	validationData?: CognitoUserAttribute[];
-	clientMetadata?: { [key: string]: string };
-}
-
 export interface AuthCache {
 	setItem();
 	getItem();
@@ -50,6 +39,7 @@ export interface AuthOptions {
 	authenticationFlowType?: string;
 	identityPoolRegion?: string;
 	clientMetadata?: any;
+	fetcher?: typeof fetch;
 }
 
 export enum CognitoHostedUIIdentityProvider {
