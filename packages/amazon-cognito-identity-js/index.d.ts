@@ -313,6 +313,7 @@ declare module 'amazon-cognito-identity-js' {
 		UserPoolId: string;
 		ClientId: string;
 		endpoint?: string;
+        fetchOptions?: any;
 		Storage?: ICognitoStorage;
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
