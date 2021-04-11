@@ -309,10 +309,15 @@ declare module 'amazon-cognito-identity-js' {
 		codeDeliveryDetails: CodeDeliveryDetails;
 	}
 
+	export interface IFetchOptions {
+		credentials?: 'same-origin' | 'include' | 'omit'
+	}
+
 	export interface ICognitoUserPoolData {
 		UserPoolId: string;
 		ClientId: string;
 		endpoint?: string;
+		fetchOptions?: IFetchOptions;
 		Storage?: ICognitoStorage;
 		AdvancedSecurityDataCollectionFlag?: boolean;
 	}
