@@ -194,7 +194,9 @@ export class AmplifySignIn {
     this.newFormFields = [...formFieldInputs];
   }
 
-  buildFormFields() {
+  // This flags avoid erasing signInAttributes when changing lang
+  private valuesHaveBeenCopiedFromFormFields: boolean = false;
+  private buildFormFields() {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
     } else {
@@ -219,10 +221,13 @@ export class AmplifySignIn {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
-        this.setFieldValue(newField, this.signInAttributes);
+        if (!this.valuesHaveBeenCopiedFromFormFields) {
+          this.setFieldValue(newField, this.signInAttributes);
+        }
         newFields.push(newField);
       });
       this.newFormFields = newFields;
+      this.valuesHaveBeenCopiedFromFormFields = true;
     }
   }
 

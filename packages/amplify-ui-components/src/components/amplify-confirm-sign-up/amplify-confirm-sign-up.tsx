@@ -124,6 +124,8 @@ export class AmplifyConfirmSignUp {
     ];
   }
 
+  // This flags avoid erasing form values when changing lang
+  private valuesHaveBeenCopiedFromFormFields: boolean = false;
   private buildFormFields() {
     if (this.formFields.length === 0) {
       this.buildDefaultFormFields();
@@ -144,9 +146,13 @@ export class AmplifyConfirmSignUp {
           );
         }
         newField['handleInputChange'] = event => this.handleFormFieldInputWithCallback(event, field);
+        if (!this.valuesHaveBeenCopiedFromFormFields) {
+          this.setFieldValue(newField);
+        }
         newFields.push(newField);
       });
       this.newFormFields = newFields;
+      this.valuesHaveBeenCopiedFromFormFields = true;
     }
   }
 
