@@ -107,4 +107,7 @@ export const authErrorMessages: AuthErrorMessages = {
 	default: {
 		message: AuthErrorStrings.DEFAULT_MSG,
 	},
+	unequalPasswords: {
+		message: AuthErrorStrings.UNEQUAL_PASSWORDS,
+	}
 };

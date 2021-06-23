@@ -199,6 +199,7 @@ export enum AuthErrorTypes {
 	EmptyChallengeResponse = 'emptyChallengeResponse',
 	NoUserSession = 'noUserSession',
 	Default = 'default',
+	UnequalPasswords = 'unequalPasswords'
 }
 
 export type AuthErrorMessages = { [key in AuthErrorTypes]: AuthErrorMessage };
