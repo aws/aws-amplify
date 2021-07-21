@@ -13,6 +13,7 @@
 
 import {
 	SearchByTextOptions,
+	SearchByCoordinatesOptions,
 	Coordinates,
 	Place,
 	MapStyle,
@@ -33,4 +34,9 @@ export interface GeoProvider {
 		text: string,
 		options?: SearchByTextOptions
 	): Promise<Place[] | void>;
+
+	searchByCoordinates(
+		coordinates: Coordinates,
+		options?: SearchByCoordinatesOptions
+	): Promise<Place | void>;
 }
