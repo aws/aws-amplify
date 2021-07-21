@@ -1,7 +1,7 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
 import { Logger } from '@aws-amplify/core';
-import { ModelInstanceCreator } from '../datastore/datastore';
+import { DataStore, ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
@@ -568,4 +568,30 @@ export function getClientSideAuthError(error) {
 			error.message.includes(clientError)
 		);
 	return clientSideError || null;
+}
+
+export async function getTokenForCustomAuth(
+	authMode: GRAPHQL_AUTH_MODE,
+	amplifyConfig: Record<string, any> = {}
+): Promise<string | undefined> {
+	if (authMode === GRAPHQL_AUTH_MODE.AWS_LAMBDA) {
+		const {
+			authProviders: { functionAuthProvider } = { functionAuthProvider: null },
+		} = amplifyConfig;
+		if (functionAuthProvider && typeof functionAuthProvider === 'function') {
+			try {
+				const { token } = await functionAuthProvider();
+				return token;
+			} catch (error) {
+				throw new Error(
+					`Error retrieving token from \`functionAuthProvider\`: ${error}`
+				);
+			}
+		} else {
+			// TODO: add docs link once available
+			throw new Error(
+				`You must provide a \`functionAuthProvider\` function to \`DataStore.configure\` when using ${GRAPHQL_AUTH_MODE.AWS_LAMBDA}`
+			);
+		}
+	}
 }
