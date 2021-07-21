@@ -1,7 +1,7 @@
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql';
 import { GraphQLAuthError } from '@aws-amplify/api';
 import { Logger } from '@aws-amplify/core';
-import { DataStore, ModelInstanceCreator } from '../datastore/datastore';
+import { ModelInstanceCreator } from '../datastore/datastore';
 import {
 	AuthorizationRule,
 	GraphQLCondition,
