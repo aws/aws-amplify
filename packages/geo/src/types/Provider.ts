@@ -12,6 +12,9 @@
  */
 
 import {
+	SearchByTextOptions,
+	Coordinates,
+	Place,
 	MapStyle,
 } from './Geo';
 
@@ -25,4 +28,9 @@ export interface GeoProvider {
 	getAvailableMaps(): string | MapStyle[];
 
 	getDefaultMap(): string | MapStyle;
+
+	searchByText(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<Place[] | void>;
 }

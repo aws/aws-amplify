@@ -13,8 +13,20 @@
 
 import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import {
+	LocationClient,
+	SearchPlaceIndexForTextCommand,
+} from '@aws-sdk/client-location';
+
+import {
+	convertPlaceCamelToPascal,
+	convertPlaceArrayPascalToCamel,
+} from '../utils';
+import {
 	GeoConfig,
+	Coordinates,
+	SearchByTextOptions,
 	GeoProvider,
+	Place,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServicesProvider');
@@ -38,6 +50,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 
 		this.getAvailableMaps.bind(this);
 		this.getDefaultMap.bind(this);
+		this.searchByText.bind(this);
 	}
 
 	/**
@@ -91,5 +104,58 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		const style = this._config.maps.items[mapName].style;
 
 		return { mapName, style };
+	}
+
+	public async searchByText(
+		text: string,
+		options?: SearchByTextOptions
+	): Promise<Place[]> {
+		const credentialsOK = await this._getCredentials();
+		if (!credentialsOK) {
+			return Promise.reject('No credentials');
+		}
+
+		let searchInput = {
+			Text: text,
+			IndexName: this._config.place_indexes.default,
+		};
+		if (options) {
+			const PascalOptions = convertPlaceCamelToPascal(options);
+			searchInput = {
+				...searchInput,
+				...PascalOptions,
+			};
+		}
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+		});
+		const command = new SearchPlaceIndexForTextCommand(searchInput);
+
+		const response = await client.send(command);
+
+		const PascalResults = response.Results.map(result => result.Place);
+		const results = convertPlaceArrayPascalToCamel(PascalResults);
+
+		return results;
+	}
+
+	/**
+	 * @private
+	 */
+	private _getCredentials() {
+		return Credentials.get()
+			.then(credentials => {
+				if (!credentials) return false;
+				const cred = Credentials.shear(credentials);
+				logger.debug('get credentials for Location Services', cred);
+				this._config.credentials = cred;
+
+				return true;
+			})
+			.catch(error => {
+				logger.warn('get credentials error', error);
+				return false;
+			});
 	}
 }
