@@ -45,6 +45,12 @@ export type SearchByTextOptions = {
 	provider?: GeoProvider;
 };
 
+export type SearchByCoordinatesOptions = {
+	maxResults?: number;
+	placeIndex?: string;
+	provider?: GeoProvider;
+};
+
 export type Place = {
 	addressNumber: string;
 	country: string;

@@ -15,6 +15,7 @@ import { ConsoleLogger as Logger, Credentials } from '@aws-amplify/core';
 import {
 	LocationClient,
 	SearchPlaceIndexForTextCommand,
+	SearchPlaceIndexForPositionCommand,
 } from '@aws-sdk/client-location';
 
 import {
@@ -27,6 +28,7 @@ import {
 	SearchByTextOptions,
 	GeoProvider,
 	Place,
+	SearchByCoordinatesOptions,
 } from '../types';
 
 const logger = new Logger('AmazonLocationServicesProvider');
@@ -51,6 +53,7 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 		this.getAvailableMaps.bind(this);
 		this.getDefaultMap.bind(this);
 		this.searchByText.bind(this);
+		this.searchByCoordinates.bind(this);
 	}
 
 	/**
@@ -131,6 +134,40 @@ export class AmazonLocationServicesProvider implements GeoProvider {
 			region: this._config.region,
 		});
 		const command = new SearchPlaceIndexForTextCommand(searchInput);
+
+		const response = await client.send(command);
+
+		const PascalResults = response.Results.map(result => result.Place);
+		const results = convertPlaceArrayPascalToCamel(PascalResults);
+
+		return results;
+	}
+
+	public async searchByCoordinates(
+		coordinates: Coordinates,
+		options?: SearchByCoordinatesOptions
+	) {
+		const credentialsOK = await this._getCredentials();
+		if (!credentialsOK) {
+			return Promise.reject('No credentials');
+		}
+		let searchInput = {
+			Position: coordinates,
+			IndexName: this._config.place_indexes.default,
+		};
+		if (options) {
+			const PascalOptions = convertPlaceCamelToPascal(options);
+			searchInput = {
+				...searchInput,
+				...PascalOptions,
+			};
+		}
+
+		const client = new LocationClient({
+			credentials: this._config.credentials,
+			region: this._config.region,
+		});
+		const command = new SearchPlaceIndexForPositionCommand(searchInput);
 
 		const response = await client.send(command);
 
