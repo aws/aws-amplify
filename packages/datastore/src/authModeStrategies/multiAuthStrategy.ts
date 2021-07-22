@@ -21,8 +21,14 @@ function getProviderFromRule(
 }
 
 function sortAuthRulesWithPriority(rules: ModelAttributeAuthProperty[]) {
-	const allowSortPriority = ['owner', 'groups', 'private', 'public'];
-	const providerSortPriority = ['userPools', 'oidc', 'iam', 'apiKey'];
+	const allowSortPriority = ['custom', 'owner', 'groups', 'private', 'public'];
+	const providerSortPriority = [
+		'function',
+		'userPools',
+		'oidc',
+		'iam',
+		'apiKey',
+	];
 
 	return [...rules].sort(
 		(a: ModelAttributeAuthProperty, b: ModelAttributeAuthProperty) => {
@@ -51,6 +57,11 @@ function getAuthRules({
 
 	rules.forEach(rule => {
 		switch (rule.allow) {
+			case 'custom':
+				if (rule.provider === 'function') {
+					authModes.add(GRAPHQL_AUTH_MODE.AWS_LAMBDA);
+				}
+				break;
 			case 'groups':
 			case 'owner': {
 				// We shouldn't attempt User Pool or OIDC if there isn't an authenticated user
