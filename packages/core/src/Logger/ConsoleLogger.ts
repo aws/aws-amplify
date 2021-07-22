@@ -52,7 +52,7 @@ export class ConsoleLogger implements Logger {
 		this._pluggables = [];
 	}
 
-	static LOG_LEVEL = null;
+	static LOG_LEVEL: string | null = null;
 
 	_padding(n) {
 		return n < 10 ? '0' + n : '' + n;
@@ -86,7 +86,7 @@ export class ConsoleLogger implements Logger {
 	 */
 	_log(type: LOG_TYPE | string, ...msg) {
 		let logger_level_name = this.level;
-		if (ConsoleLogger.LOG_LEVEL) {
+		if (ConsoleLogger.LOG_LEVEL !== null) {
 			logger_level_name = ConsoleLogger.LOG_LEVEL;
 		}
 		if (typeof (<any>window) !== 'undefined' && (<any>window).LOG_LEVEL) {
